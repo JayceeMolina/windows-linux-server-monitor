@@ -169,6 +169,12 @@ python3 monitor.py
 
 The project includes `scripts/run_monitor.sh` to simplify running the monitoring tool on Linux.
 
+First, give the script execution permission:
+
+```bash
+chmod +x scripts/run_monitor.sh
+```
+
 Run it using:
 
 ```bash
@@ -385,6 +391,5 @@ Commit and push changes on that branch, then open a Pull Request to merge them i
 ## Limitations
 
 - Monitoring results depend on the operating system and environment where the tool is executed.
-- Linux testing was performed through WSL2 rather than a dedicated Linux server.
 - Automated execution under WSL2 depends on the WSL environment remaining active.
 - The simulator generates temporary resource usage for testing and does not represent actual production workloads.
