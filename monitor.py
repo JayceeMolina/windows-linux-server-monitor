@@ -1,8 +1,10 @@
+import platform
+import time
+
+import psutil
+
 import config
 from logger import logger
-import time
-import platform
-import psutil
 from reporter import save_report
 
 

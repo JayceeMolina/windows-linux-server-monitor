@@ -16,11 +16,13 @@ A cross-platform system monitoring tool built with Python and `psutil`. It colle
 - Bash script for Linux execution
 - Automated monitoring using Windows Task Scheduler and Linux cron
 - Resource simulation for testing monitoring behavior
+- Automated unit testing with pytest
 
 ## Technologies
 
 - Python
 - psutil
+- pytest
 - Bash
 - Git and GitHub
 - Windows Task Scheduler
@@ -53,6 +55,10 @@ windows-linux-server-monitor/
 │
 ├── scripts/
 │   └── run_monitor.sh
+│
+├── tests/
+│   ├── test_monitor.py
+│   └── test_reporter.py
 │
 ├── .gitignore
 ├── config.py
@@ -136,6 +142,25 @@ python monitor.py
 python3 monitor.py
 ```
 
+## Automated Testing
+
+The project uses pytest to run automated unit tests for monitoring alerts and CSV reporting.
+
+Current test coverage includes:
+
+- CPU, RAM, and disk threshold checks.
+- CSV report creation and header validation.
+- CSV data accuracy.
+- Appending new records without duplicating CSV headers.
+
+Run the tests from the project root:
+
+```bash
+python -m pytest -v
+```
+
+The `-v` option displays individual test names and their results.
+
 ## Linux Setup (Ubuntu through WSL2)
 
 Install WSL2 and Ubuntu, then open the Ubuntu terminal.
@@ -182,6 +207,7 @@ Run it using:
 ```
 
 The script:
+
 - Navigates to the project root directory.
 - Detects an available Python interpreter.
 - Prioritizes the active virtual environment when available.
@@ -270,6 +296,7 @@ sudo service cron stop
 The project includes `simulator.py` to generate temporary system resource usage for testing.
 
 The simulator:
+
 - Generates CPU load using a separate process.
 - Allocates 256 MB of RAM.
 - Creates a temporary 100 MB disk file.
@@ -344,6 +371,7 @@ To set up the project from scratch:
 6. Configure the appropriate output directories.
 7. Test the monitoring tool on Windows and Ubuntu.
 8. Configure automated execution using Task Scheduler and cron.
+9. Write and execute automated unit tests using pytest.
 
 ## Git Workflow
 
@@ -383,7 +411,7 @@ Commit and push changes on that branch, then open a Pull Request to merge them i
 
 - Email or external notification integration for threshold warnings.
 - JSON reporting support.
-- Automated unit and integration testing.
+- Automated integration testing.
 - Additional monitoring metrics.
 - Improved resource simulation and testing scenarios.
 - Multi-device monitoring to collect and monitor resource metrics from multiple machines simultaneously.
