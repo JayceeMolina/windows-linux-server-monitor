@@ -39,7 +39,8 @@ def test_save_report_append(tmp_path, monkeypatch):
     # Append another report
     save_report(60.0, 70.0, 80.0)
 
-    csv_file = tmp_path / "reports" / "windows" / "data.csv"
+    folder = "windows" if platform.system() == "Windows" else "linux"
+    csv_file = tmp_path / "reports" / folder / "data.csv"
 
     with open(csv_file, "r", newline="", encoding="utf-8") as file:
         reader = csv.DictReader(file)
