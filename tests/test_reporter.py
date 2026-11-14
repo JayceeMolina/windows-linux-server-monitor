@@ -1,4 +1,5 @@
 import csv
+import platform
 
 from reporter import save_report
 
@@ -8,7 +9,8 @@ def test_save_report(tmp_path, monkeypatch):
 
     save_report(45.5, 60.2, 90.1)
 
-    csv_file = tmp_path / "reports" / "windows" / "data.csv"
+    folder = "windows" if platform.system() == "Windows" else "linux"
+    csv_file = tmp_path / "reports" / folder / "data.csv"
 
     assert csv_file.is_file()
 
