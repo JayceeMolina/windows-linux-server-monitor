@@ -407,6 +407,12 @@ git checkout -b feature/your-feature
 
 Commit and push changes on that branch, then open a Pull Request to merge them into `main`.
 
+## CI/CD
+
+- GitHub Actions automatically runs the project's automated tests on every push and pull request targeting the main branch.
+- The workflow uses Ubuntu and Windows runners to execute the pytest test suite.
+- During CI testing, a cross-platform path issue was discovered: The report tests expected the Windows directory even when running on Linux. This was fixed by making the expected report directory depend on the operating system.
+
 ## Future Improvements
 
 - Email or external notification integration for threshold warnings.
