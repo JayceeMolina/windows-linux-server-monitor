@@ -427,3 +427,5 @@ Commit and push changes on that branch, then open a Pull Request to merge them i
 - Monitoring results depend on the operating system and environment where the tool is executed.
 - Automated execution under WSL2 depends on the WSL environment remaining active.
 - The simulator generates temporary resource usage for testing and does not represent actual production workloads.
+
+You can’t commit to main because it is a protected branch
