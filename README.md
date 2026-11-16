@@ -409,9 +409,32 @@ Commit and push changes on that branch, then open a Pull Request to merge them i
 
 ## CI/CD
 
-- GitHub Actions automatically runs the project's automated tests on every push and pull request targeting the main branch.
-- The workflow uses Ubuntu and Windows runners to execute the pytest test suite.
-- During CI testing, a cross-platform path issue was discovered: The report tests expected the Windows directory even when running on Linux. This was fixed by making the expected report directory depend on the operating system.
+This project uses **GitHub Actions** to automatically run the pytest test suite on Ubuntu and Windows environments.
+
+### GitHub Actions Workflow
+
+- **Trigger events:** Pushes to `main` and pull requests targeting `main`.
+- **Python version:** 3.11
+- **Test framework:** pytest
+- **Runners:** `ubuntu-latest` and `windows-latest`
+- **Test command:** `python -m pytest -v`
+
+The workflow checks out the repository, sets up Python, installs project dependencies, and executes the automated tests on both operating systems.
+
+### Branch Protection
+
+The `main` branch is protected to ensure changes are reviewed through Pull Requests and pass automated checks before merging.
+
+Required status checks:
+
+- `test (ubuntu-latest)`
+- `test (windows-latest)`
+
+### CI Testing and Troubleshooting
+
+During CI testing, a cross-platform path issue was discovered: the report tests expected the Windows directory even when running on Linux. This was fixed by making the expected report directory depend on the operating system.
+
+The workflow was successfully tested through a Pull Request, with both Ubuntu and Windows checks passing.
 
 ## Future Improvements
 
