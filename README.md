@@ -168,7 +168,7 @@ Install WSL2 and Ubuntu, then open the Ubuntu terminal.
 Navigate to the project directory. If the repository is stored on the Windows filesystem:
 
 ```bash
-cd /mnt/c/Users/USER/Upskill/windows-linux-server-monitor
+cd /mnt/c/Users/<your-windows-username>/path/to/windows-linux-server-monitor
 ```
 
 Create and activate the Linux virtual environment:
@@ -266,7 +266,7 @@ crontab -e
 Add the following entry to execute the monitoring script every five minutes:
 
 ```cron
-*/5 * * * * /bin/bash /mnt/c/Users/USER/Upskill/windows-linux-server-monitor/scripts/run_monitor.sh
+*/5 * * * * /bin/bash /mnt/c/Users/<your-windows-username>/path/to/windows-linux-server-monitor/scripts/run_monitor.sh
 ```
 
 Replace the path with the actual location of the project.
