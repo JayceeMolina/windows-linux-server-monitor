@@ -1,0 +1,24 @@
+# Python virtual environments
+.venv/
+.venv-linux/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Git files and configuration
+.git/
+.github/
+
+# IDE/editor settings
+.vscode/
+.idea/
+
+# Runtime-generated files
+logs/
+reports/
+
+# Environment variables and secrets
+.env
+.env.*
