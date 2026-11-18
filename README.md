@@ -2,6 +2,8 @@
 
 A cross-platform system monitoring tool built with Python and `psutil`. It collects system resource information, identifies resource-intensive processes, checks configurable thresholds, and records monitoring data on Windows and Linux environments.
 
+The project also supports Docker and Docker Compose for building and running the application in a containerized environment.
+
 ## Features
 
 - CPU utilization monitoring
@@ -16,7 +18,10 @@ A cross-platform system monitoring tool built with Python and `psutil`. It colle
 - Bash script for Linux execution
 - Automated monitoring using Windows Task Scheduler and Linux cron
 - Resource simulation for testing monitoring behavior
+- Docker image creation and containerized execution
+- Docker Compose configuration with persistent log and report storage
 - Automated unit testing with pytest
+- GitHub Actions CI for Windows, Ubuntu, and Docker image builds
 
 ## Technologies
 
@@ -24,22 +29,32 @@ A cross-platform system monitoring tool built with Python and `psutil`. It colle
 - psutil
 - pytest
 - Bash
+- Docker
+- Docker Compose
 - Git and GitHub
+- GitHub Actions
 - Windows Task Scheduler
 - Linux cron
 - CSV
 
-## Supported Operating Systems
+## Supported Environments
 
 - Windows
 - Ubuntu 26.04.1 LTS (tested through WSL2)
+- Docker with Linux containers
 
 **Note:** Linux testing was performed using Ubuntu under Windows Subsystem for Linux 2 (WSL2), not a dedicated Ubuntu Server installation.
+
+Docker testing was performed using Docker Desktop with the WSL2 backend.
 
 ## Project Structure
 
 ```text
 windows-linux-server-monitor/
+│
+├── .github/
+│   └── workflows/
+│       └── tests.yml
 │
 ├── logs/
 │   ├── windows/
@@ -60,7 +75,10 @@ windows-linux-server-monitor/
 │   ├── test_monitor.py
 │   └── test_reporter.py
 │
+├── .dockerignore
 ├── .gitignore
+├── compose.yaml
+├── Dockerfile
 ├── config.py
 ├── logger.py
 ├── monitor.py
@@ -72,10 +90,19 @@ windows-linux-server-monitor/
 
 ## Prerequisites
 
+### Native Execution
+
 - Python 3.10 or later
 - Git
 - Windows or Ubuntu Linux
 - WSL2 with Ubuntu for Linux testing on Windows
+
+### Docker Execution
+
+- Docker Desktop or Docker Engine
+- Docker Compose
+
+For Windows users, Docker Desktop with WSL2 integration is recommended.
 
 ## Setup and Installation
 
@@ -291,6 +318,110 @@ sudo service cron stop
 
 **Note:** Windows Task Scheduler requires Windows to be running. Linux cron under WSL2 requires the WSL environment to be running.
 
+## Docker Setup
+
+The project includes a Dockerfile and Docker Compose configuration to build and run the monitoring application in a Linux container.
+
+### 1. Build the Docker Image
+
+From the project root directory, run:
+
+```bash
+docker compose build
+```
+
+Docker Compose reads `compose.yaml`, uses the current project directory as the build context, and builds the image using the instructions in `Dockerfile`.
+
+### 2. Run the Container
+
+Execute the monitoring application:
+
+```bash
+docker compose run --rm monitor
+```
+
+The container runs `monitor.py` and exits after the monitoring process finishes.
+
+The `--rm` option automatically removes the container after it exits.
+
+### 3. Persistent Logs and Reports
+
+The Compose configuration uses bind mounts to preserve monitoring output on the host machine.
+
+```yaml
+services:
+  monitor:
+    build: .
+    container_name: server-monitor
+    volumes:
+      - ./logs:/app/logs
+      - ./reports:/app/reports
+```
+
+The bind mounts connect local project directories to directories inside the container.
+
+| Host directory | Container directory |
+|---|---|
+| `./logs` | `/app/logs` |
+| `./reports` | `/app/reports` |
+
+Logs and CSV reports generated inside the container are therefore accessible from the project directory on the host machine.
+
+Docker execution creates the following output paths:
+
+```text
+logs/
+└── linux/
+    └── monitor.log
+
+reports/
+└── linux/
+    └── data.csv
+```
+
+The output is stored under `linux` because the application runs inside a Linux container, even when Docker Desktop is running on Windows.
+
+### 4. Run Tests Inside the Container
+
+The project can also execute its pytest suite inside the Docker container.
+
+```bash
+docker compose run --rm monitor python -m pytest -v
+```
+
+This overrides the Dockerfile's default startup command for that execution and runs the test suite instead.
+
+### 5. Docker Configuration
+
+**Dockerfile**
+
+The Dockerfile defines how the application image is built.
+
+It uses `python:3.11-slim` as the base image, installs the required Python dependencies, copies the project files, and sets the default command to execute `monitor.py`.
+
+**.dockerignore**
+
+The `.dockerignore` file excludes unnecessary files from the Docker build context, such as:
+
+- Python virtual environments
+- Python cache files
+- Git metadata
+- IDE settings
+- Existing logs and reports
+- Environment files containing configuration or secrets
+
+**compose.yaml**
+
+The Compose configuration defines the monitoring service, image build configuration, container name, and bind mounts for persistent output.
+
+### Docker Monitoring Limitation
+
+The application monitors the environment visible to the container by default, not the entire host machine.
+
+For example, when running a Linux container through Docker Desktop on Windows, the application sees a Linux environment rather than the Windows host environment.
+
+Native Windows and Linux execution should be used when monitoring the respective host operating systems directly.
+
 ## Resource Simulation
 
 The project includes `simulator.py` to generate temporary system resource usage for testing.
@@ -300,7 +431,7 @@ The simulator:
 - Generates CPU load using a separate process.
 - Allocates 256 MB of RAM.
 - Creates a temporary 100 MB disk file.
-- Runs the simulation for 30 seconds.
+- Runs the simulation for 20 seconds.
 - Terminates the CPU process, releases allocated memory, and removes the temporary file after execution.
 
 Run the simulator:
@@ -372,54 +503,62 @@ To set up the project from scratch:
 7. Test the monitoring tool on Windows and Ubuntu.
 8. Configure automated execution using Task Scheduler and cron.
 9. Write and execute automated unit tests using pytest.
+10. Add Docker configuration and validate containerized execution.
+11. Configure GitHub Actions to validate tests and Docker image builds.
 
 ## Git Workflow
 
-Initialize the repository:
+For future development, create a separate branch from the updated `main` branch:
 
 ```bash
-git init
+git switch main
+git pull origin main
+git switch -c feature/your-feature
 ```
 
-Stage project files:
+Stage and commit changes:
 
 ```bash
 git add .
+git commit -m "Describe your changes"
 ```
 
-Commit changes:
+Push the new branch:
 
 ```bash
-git commit -m "Initial project setup"
+git push -u origin feature/your-feature
 ```
 
-Push the project to GitHub:
+Open a Pull Request targeting `main`.
 
-```bash
-git push -u origin main
-```
-
-For future development, create a separate branch:
-
-```bash
-git checkout -b feature/your-feature
-```
-
-Commit and push changes on that branch, then open a Pull Request to merge them into `main`.
+After the Pull Request is reviewed and merged, the feature branch can be deleted.
 
 ## CI/CD
 
-This project uses **GitHub Actions** to automatically run the pytest test suite on Ubuntu and Windows environments.
+This project uses **GitHub Actions** to automatically run tests on Windows and Ubuntu and validate the Docker image build.
 
 ### GitHub Actions Workflow
 
-- **Trigger events:** Pushes to `main` and pull requests targeting `main`.
-- **Python version:** 3.11
-- **Test framework:** pytest
-- **Runners:** `ubuntu-latest` and `windows-latest`
-- **Test command:** `python -m pytest -v`
+**Trigger events:**
 
-The workflow checks out the repository, sets up Python, installs project dependencies, and executes the automated tests on both operating systems.
+- Pushes to `main`.
+- Pull requests targeting `main`.
+
+**Native test job:**
+
+- Python version: 3.11
+- Test framework: pytest
+- Runners: `ubuntu-latest` and `windows-latest`
+- Test command: `python -m pytest -v`
+
+The workflow checks out the repository, sets up Python, installs dependencies, and executes the automated tests on both operating systems.
+
+**Docker build job:**
+
+- Runner: `ubuntu-latest`
+- Build command: `docker build -t windows-linux-server-monitor-monitor:latest .`
+
+This job builds the Docker image using the project's Dockerfile to validate that the container image can be built successfully in the CI environment.
 
 ### Branch Protection
 
@@ -430,14 +569,17 @@ Required status checks:
 - `test (ubuntu-latest)`
 - `test (windows-latest)`
 
+The Docker build job also runs as part of the workflow.
+
 ### CI Testing and Troubleshooting
 
 During CI testing, a cross-platform path issue was discovered: the report tests expected the Windows directory even when running on Linux. This was fixed by making the expected report directory depend on the operating system.
 
-The workflow was successfully tested through a Pull Request, with both Ubuntu and Windows checks passing.
+The workflow was successfully tested through a Pull Request, with the Ubuntu and Windows test checks passing and the Docker image build completing successfully.
 
 ## Future Improvements
 
+- Publish the Docker image to Docker Hub for easier distribution.
 - Email or external notification integration for threshold warnings.
 - JSON reporting support.
 - Automated integration testing.
@@ -448,5 +590,6 @@ The workflow was successfully tested through a Pull Request, with both Ubuntu an
 ## Limitations
 
 - Monitoring results depend on the operating system and environment where the tool is executed.
+- Docker containers monitor their visible container environment by default, not the entire host machine.
 - Automated execution under WSL2 depends on the WSL environment remaining active.
 - The simulator generates temporary resource usage for testing and does not represent actual production workloads.
